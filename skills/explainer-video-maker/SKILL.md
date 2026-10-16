@@ -30,6 +30,7 @@ Never ask for something the user already provided. Before you ask anything, scan
 | **Material** | Any URL or bare domain (`https://…`, `www.…`, `querytab.com`, `docs.example.io/guide`); an attached or uploaded file; a named file or folder; pasted text; a clear product or topic plus "research it" |
 | **Style** | Any look or feel words (dark, minimal, corporate, playful, "like Apple", brand colors, a reference video) |
 | **Length** | Any duration or scope ("1 minute", "short", "cover everything", "one per section") |
+| **Size** | "Vertical", "reel", "TikTok", "Shorts", "story", "square", "for Instagram", "4K", "landscape", or a size like `1080x1350` |
 | **Voice** | Gender, accent, a named voice, speed |
 | **Sound & captions** | "No voice", "silent", "no sound", "music only", "no subtitles", "no captions" |
 | **Content approach** | "Stick to the docs", "use the screenshots", "be creative", "keep it minimal", "simplify" |
@@ -81,6 +82,21 @@ Ask what the video should cover: links, attached files, a connected folder, or p
    - When brand assets are available, offer the best fit as **"Brand match · <style>"** first: the style's layout with the client's logo, colors and fonts.
 2. The user can type their own style ("Other"): a reference video, a palette, or brand colors.
 
+**Size.** Ask it in the **same AskUserQuestion call** as the style (and the format, when that's asked), so this step stays one screen. Skip it if the request already implies a size, and confirm it in the summary.
+- **Horizontal 16:9 · 1920×1080 (Default):** YouTube, websites, presentations.
+- **Vertical 9:16 · 1080×1920:** Reels, TikTok, YouTube Shorts, stories.
+- **Square 1:1 · 1080×1080:** social feeds, LinkedIn, ads.
+- **Other (custom):** the user types a size, for example `1080×1350` (Instagram 4:5 portrait), `3840×2160` (4K), or any width × height. They can also ask for several sizes of the same video.
+
+Mark the size that fits the request "(Recommended)": a promo or social clip for Reels or TikTok → Vertical; a feed post → Square; otherwise Horizontal.
+
+Custom size rules:
+- Round each side to an even number (H.264 needs it), and say so if you changed it.
+- Keep the short side at least 480 px and the long side at most 3840 px. Beyond that, ask before going on.
+- An aspect ratio wider than 3:1 or taller than 1:3 is unusual. Confirm it's intended.
+- Render time grows with pixel count: 4K takes about 4× as long as 1080p. Say so when the user picks it.
+- **Several sizes:** build the scenes once for the main size, then do a layout pass for each extra size (section 6, "Sizes and layout"), with its own stills review and render. Narration and the timeline are shared. Name the files `<video-slug>-<W>x<H>.mp4`.
+
 If the user wants to see the styles first, point them to the lookbook ([references/style-lookbook.html](references/style-lookbook.html)), published as an artifact if the environment can publish one.
 
 ### Step 3: Settings (all on one screen; change as many as you like)
@@ -98,7 +114,7 @@ Don't ask "keep or change?" and then make the user pick a single thing. Ask **on
 
    Facts (names, numbers, commands, prices) stay exact in every approach. Only the visuals and the framing change.
 
-Resolution (1920×1080 default; 1080×1920 vertical or 1080×1080 square), 30 fps, and the client's logo on the intro and outro stay at their defaults unless the user mentions them or types them under "Other".
+The size was chosen in Step 2. Frame rate (30 fps) and the client's logo on the intro and outro stay at their defaults unless the user mentions them or types them under "Other".
 
 Without AskUserQuestion, show the same four settings as a numbered list with lettered options and the defaults marked, and ask the user to reply with only the ones to change (for example "1b, 3c"), or "ok" to keep all.
 
@@ -110,7 +126,7 @@ Ask once whether there's anything else: audience, language, sections to emphasiz
 
 If there's a project (an open repo, a connected folder, or a path in the request), save into it without asking: `<project>/videos/<video-slug>/`, and say where in the summary. In the claude.ai cloud workspace with no connected folder, don't ask: deliver to `/mnt/user-data/outputs/`.
 
-Then give a short summary (material, style, length, voice or silent, captions, content approach, save location) and start building.
+Then give a short summary (material, format, style, size, length, voice or silent, captions, content approach, save location) and start building.
 
 **Brand assets (logo, colors, fonts, images):** the client decides. Most users make videos for their own company or for a client who asked for it, and then the video should use the real brand: logo, colors, fonts, product screenshots and images from the shared website or files.
 - If the brand clearly belongs to the user (their domain or company, or "our product"), or they say it's for a client, use the assets fully. Don't ask.
@@ -146,7 +162,7 @@ Then give a short summary (material, style, length, voice or silent, captions, c
    - If neither works, use the closest @fontsource match.
 5. **Images and screenshots:**
    - Save hero images, product shots and feature illustrations (`<img>`, `srcset`, `og:image`) at the largest available size.
-   - Also screenshot the live site with Playwright: the full page plus each key section at 1920px width, into `assets/shots/`. Close cookie banners first if possible.
+   - Also screenshot the live site with Playwright: the full page plus each key section at 1920px width, into `assets/shots/`. Close cookie banners first if possible. For a vertical or square video, also take mobile-width shots (430px wide, `deviceScaleFactor: 2`) into `assets/shots/mobile/`; they fit phone mockups far better than cropped desktop shots.
 6. **Copy:** record the tagline, headline, feature names and call-to-action wording. Use the client's own phrasing in titles and captions.
 7. **Report back:** list in one line what you collected (for example: "Got the logo (SVG), 3 brand colors, the Inter font and 6 screenshots"). Ask for anything missing that matters, such as a higher-resolution logo.
 
@@ -246,13 +262,31 @@ Follow [formats/promo.md](formats/promo.md): `beats.py` finds the music's beats 
 
 ## 6. Scenes (HTML/CSS/JS, deterministic)
 
-Files: `index.html` (fonts, CSS tokens, stage, header, captions, progress bar), `lib.js` (helpers), `scenes.js` (one object per scene id), `main.js` (the time engine).
+Files: `config.json` + `config.js` (the video size), `index.html` (fonts, CSS tokens, stage, header, captions, progress bar), `lib.js` (helpers), `scenes.js` (one object per scene id), `main.js` (the time engine).
+
+**Size config:** write the chosen size once and read it everywhere:
+```bash
+echo '{"W":1920,"H":1080}' > config.json   # e.g. 1080x1920 vertical, 1080x1080 square
+echo "window.STAGE=$(cat config.json);" > config.js
+```
+Load `config.js` first in `index.html`. The stage element gets `width:${STAGE.W}px;height:${STAGE.H}px`. `render.js` and `stills.js` read `config.json` for the viewport.
+
+**Sizes and layout:** never stretch or letterbox a 16:9 layout into another size. Lay each scene out for its frame, in terms of `W`, `H` and a unit `U = Math.min(W,H)/1080` (multiply font sizes, strokes and spacing by `U`):
+
+| Size | Safe content area | Captions | Layout |
+|---|---|---|---|
+| 16:9 · 1920×1080 | x 80–1840, y 110–880 | `bottom:44px`, up to 2 lines of ~60 chars | Rows of 3–4 items, side-by-side panels |
+| 9:16 · 1080×1920 | x 60–940, y 260–1480 (the top ~250 px, bottom ~420 px and right ~140 px get covered by app buttons and text) | `bottom:440px`, up to 2 lines of ~28 chars, 56px+ | Stack vertically: one item per row, panels top and bottom, bigger type, fewer words per scene |
+| 1:1 · 1080×1080 | x 60–1020, y 100–860 | `bottom:50px`, up to 2 lines of ~36 chars | 2×2 grids, one panel plus a caption, compact header |
+| Custom | 6% of the short side on every edge; landscape-like ratios follow 16:9, portrait-like follow 9:16 | Scale with `U` | Pick the closest row above |
+
+Each style file has notes on adapting it to vertical and square (see [styles/README.md](styles/README.md)). Check every size in the stills review.
 
 **Rules**
 - **Load the style file first** (`styles/<style>.md`) and take tokens, fonts, layout and scene vocabulary from it. Use the matching block in the lookbook as working code (its stage is 960×540; double the coordinates).
 - No CSS transitions or animations, no `setTimeout`, no `Date.now()`, no `Math.random()`. Everything is computed from `t` inside `update()`. Seeded pseudo-randomness is fine (for example `hash(frameIndex*7+id)`), because the same frame always gives the same result.
-- Stage size is 1920×1080. Keep content between y≈110 and y≈880. Captions sit at `bottom:44px`.
-- **Captions off:** set `window.CAPTIONS=false` in `index.html` and skip caption rendering in `renderAt`. Content may then use the space down to y≈980.
+- Stage size is `STAGE.W × STAGE.H` (1920×1080 by default). Keep content inside the safe area for that size, and captions where the table above puts them. Style files give coordinates for 1920×1080: re-lay them out for other sizes, don't just scale.
+- **Captions off:** set `window.CAPTIONS=false` in `index.html` and skip caption rendering in `renderAt`. Content may then use the caption space too (for vertical, still stay above the bottom ~420 px).
 - Load fonts from `node_modules/@fontsource/*/files/*.woff2` via `@font-face`. Wait for `document.fonts.ready`.
 - Each scene has `build(root, C)`, which creates the DOM once, and `update(t, C, st)`, where `t` is local seconds. `C(i, f)` gives the local time at fraction `f` of line `i`. Use it to time reveals to the words, for example `C(0, .5)` for the middle of the first sentence.
 - To hide elements, use `visibility`, never `display=''`, because that wipes an inline `display:flex`.
@@ -262,6 +296,7 @@ Files: `index.html` (fonts, CSS tokens, stage, header, captions, progress bar), 
 
 **lib.js core**
 ```js
+const W=STAGE.W, H=STAGE.H, U=Math.min(W,H)/1080;   // from config.js; scale sizes by U
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), lerp=(a,b,p)=>a+(b-a)*p;
 const easeOut=x=>1-Math.pow(1-x,3), easeIO=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const backOut=x=>{const c1=1.4,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
@@ -295,20 +330,21 @@ window.READY=document.fonts.ready.then(()=>{window.renderAt(0);return true;});
 
 ## 7. Review stills (required before the full render)
 
-`stills.js` opens the page, calls `renderAt(t)` for the given times, and saves PNGs. Pick one time near the end of each scene, plus a few mid-scene times. Tile them with `ffmpeg -pattern_type glob -i 's_*.png' -vf "scale=960:540,tile=2x3" sheet_%d.png`, then Read the sheets. Fix overlaps, wrapped labels, text off-screen, captions over three lines, empty panels, and console errors. Iterate until clean.
+`stills.js` opens the page, calls `renderAt(t)` for the given times, and saves PNGs. Pick one time near the end of each scene, plus a few mid-scene times. Tile them at half size with `ffmpeg -pattern_type glob -i 's_*.png' -vf "scale=iw/2:ih/2,tile=2x3" sheet_%d.png` (use `tile=3x2` for vertical, `tile=3x3` for square), then Read the sheets. For vertical, also check that nothing important sits in the areas app buttons cover. Fix overlaps, wrapped labels, text off-screen, captions over three lines, empty panels, and console errors. Iterate until clean.
 
 ## 8. Render → `render.js`
 
 ```js
 // node render.js <startFrame> <endFrame> <out.mp4>
 const {chromium}=require('playwright');const{spawn}=require('child_process');const FPS=30,[s,e,out]=[+process.argv[2],+process.argv[3],process.argv[4]];
+const {W,H}=require('./config.json');
 (async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',args:['--allow-file-access-from-files']});
- const p=await b.newPage({viewport:{width:1920,height:1080}});await p.goto('file://'+__dirname+'/index.html');await p.evaluate(()=>window.READY);
+ const p=await b.newPage({viewport:{width:W,height:H}});await p.goto('file://'+__dirname+'/index.html');await p.evaluate(()=>window.READY);
  const ff=spawn('ffmpeg',['-loglevel','error','-y','-f','image2pipe','-framerate',''+FPS,'-c:v','mjpeg','-i','-','-c:v','libx264','-preset','medium','-crf','18','-pix_fmt','yuv420p','-r',''+FPS,out],{stdio:['pipe','inherit','inherit']});
  for(let f=s;f<e;f++){await p.evaluate(t=>window.renderAt(t),f/FPS);const buf=await p.screenshot({type:'jpeg',quality:92});if(!ff.stdin.write(buf))await new Promise(r=>ff.stdin.once('drain',r));}
  ff.stdin.end();await new Promise(r=>ff.on('close',r));await b.close();console.log('done',out);})();
 ```
-For 3D styles, add the WebGL args from `styles/apple-promo.md`, load `http://localhost:8123/index.html` instead of the file URL, and wait for `window.READY` to exist before awaiting it. Adjust `executablePath` to whatever Chromium exists. On a desktop, omit `executablePath` so Playwright uses its own Chromium, and on Windows build the URL with `require('url').pathToFileURL(__dirname+'/index.html').href`. Total frames are `ceil(duration*30)`. Benchmark 60 frames first (about 0.08 s per frame), then split into one chunk per CPU core and run the chunks in parallel (`nohup ... &` on Linux/macOS; on Windows use background shell runs or `Start-Process`). Poll the logs until each says `done`.
+For 3D styles, add the WebGL args from `styles/apple-promo.md`, load `http://localhost:8123/index.html` instead of the file URL, and wait for `window.READY` to exist before awaiting it. Adjust `executablePath` to whatever Chromium exists. On a desktop, omit `executablePath` so Playwright uses its own Chromium, and on Windows build the URL with `require('url').pathToFileURL(__dirname+'/index.html').href`. Total frames are `ceil(duration*30)`. Benchmark 60 frames first (about 0.08 s per frame at 1080p; vertical and square are similar, 4K about 4× slower), then split into one chunk per CPU core and run the chunks in parallel (`nohup ... &` on Linux/macOS; on Windows use background shell runs or `Start-Process`). Poll the logs until each says `done`.
 
 ## 9. Mux
 
@@ -321,14 +357,14 @@ Silent video: skip the audio mux and just remux: `ffmpeg -y -i video.mp4 -c copy
 
 ## 10. Verify
 
-- Check with `ffprobe` that the video and audio durations match within 0.1 s, at 1920x1080 (or the chosen size) and 30 fps. For a silent video, check that the video duration matches `timeline.json` and that there is no audio stream.
+- Check with `ffprobe` that the video and audio durations match within 0.1 s, at the size in `config.json` and 30 fps. For a silent video, check that the video duration matches `timeline.json` and that there is no audio stream.
 - Run `volumedetect` (voiced videos only): the mean should be around −16 dB, and the audio must not be silent.
 - Extract frames at the chunk seam and at a scene transition, and Read them.
 - Remember you can't hear the audio. Tell the user to listen for mispronounced terms, and offer to re-spell them and re-render.
 
 ## 11. Deliver
 
-Name the files after the video (`<video-slug>.mp4` and `<video-slug>-script.txt`, a timestamped script: `[m:ss] Chapter` followed by its lines). Deliver by environment:
+Name the files after the video (`<video-slug>.mp4` and `<video-slug>-script.txt`, a timestamped script: `[m:ss] Chapter` followed by its lines). With several sizes, add the size: `<video-slug>-1080x1920.mp4`; the script file is shared. Deliver by environment:
 - **Claude Code on a desktop:** move both into the save location (Step 4) and give their full absolute paths. Delete the build folder unless the user wants to keep it for edits (offer once). If SendUserFile is available, send the MP4 too.
 - **claude.ai cloud workspace:** copy both to `/mnt/user-data/outputs/`, then SendUserFile both.
 - **Connected folder:** also commit both into it with device_commit_files, and name the folder and files.

@@ -16,6 +16,7 @@ Turn docs, links, or text files into a narrated, animated explainer video (MP4).
 - **Styles to fit the content**: suggests a look based on the material: Terminal dark, Clean corporate, Whiteboard, Paper cutout, Isometric, Blueprint, Flat vector story or Minimal monochrome, each optionally in your brand's logo, colors and fonts. See them side by side in the [style lookbook](references/style-lookbook.html).
 - **Explainers or promos**: a full narrated explainer, or a 15–60 s promo cut to the beat of your music track, in Apple-style 3D or kinetic type.
 - **Captions and chapters**: on-screen captions, a chapter header, and a progress bar.
+- **Any size**: horizontal 16:9 (1920×1080), vertical 9:16 for Reels, TikTok and Shorts (1080×1920), square 1:1 (1080×1080), or a custom size such as 4:5 or 4K. Each size gets its own layout (not a crop), and you can ask for several sizes of the same video.
 - **Free and offline**: no paid service or API key. The voice and the rendering run locally.
 - **Guided setup**: asks a few short questions on one screen (length, voice, sound and captions, content approach). Change as many as you like, or keep the defaults. It asks where to save the video when there's no project to save into.
 - **Works on desktop and web**: detects whether it's running in Claude Code on your machine or in the claude.ai cloud workspace, picks the right place for files, and checks that the local voice model can run (falling back to the system voice or a silent video if not).
@@ -50,7 +51,7 @@ The key idea: **the voiceover is the clock.**
 6. **Render**: headless Chromium (Playwright) calls `renderAt(t)` for every frame at 30 fps and pipes screenshots to ffmpeg. Rendering is split into chunks that run in parallel.
 7. **Mux + verify**: ffmpeg joins the chunks, adds the voice track with loudness normalization, and checks that audio and video durations match.
 
-The result is a 1920×1080 MP4 plus a timestamped narration script.
+The result is an MP4 at the chosen size (1920×1080 by default) plus a timestamped narration script.
 
 For a **promo**, the music is the clock instead: a small script finds the track's beats, each shot gets a whole number of beats, and cuts land on them. 3D promos use Three.js in the same headless browser, which renders more slowly.
 

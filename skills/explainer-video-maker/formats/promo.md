@@ -11,6 +11,8 @@ Use when the user wants a promo, teaser, ad, launch video, trailer, or social cl
 | Transitions | 0.6 s crossfades | Hard cuts on beats (or 2-frame flash/whip) |
 | Words | Full sentences | One short phrase per shot, 1–4 words |
 
+**Size:** asked in Step 2 like any video. Promos for Reels, TikTok or Shorts should be vertical (1080×1920), so recommend that when the request mentions social. Lay shots out with the vertical notes in `styles/README.md`.
+
 ## Settings (replaces Step 3 for promos)
 One AskUserQuestion call, first option the default:
 1. **Length:** 30 s (Default) / 15 s / 60 s.

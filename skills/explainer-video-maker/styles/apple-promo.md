@@ -40,7 +40,7 @@ Fonts: `@fontsource/inter-tight` (300, 600, 800).
     await new Promise((ok,err)=>{const s=document.createElement('script');s.src=f;s.onload=ok;s.onerror=err;document.head.appendChild(s);});
   ```
   In `main.js`, `window.READY = Promise.all([document.fonts.ready, ...window.LOADING])` so model loads finish first. In `render.js` and `stills.js`, `await p.waitForFunction(()=>window.READY)` before evaluating it.
-- Renderer: `new THREE.WebGLRenderer({canvas, antialias:true, alpha:true, preserveDrawingBuffer:true})`, `setPixelRatio(1)`, size 1920×1080, `outputColorSpace = THREE.SRGBColorSpace`. Call `renderer.render(scene, camera)` inside the scene's `update(t)`: no animation loop, no clock.
+- Renderer: `new THREE.WebGLRenderer({canvas, antialias:true, alpha:true, preserveDrawingBuffer:true})`, `setPixelRatio(1)`, size `STAGE.W × STAGE.H` (camera `aspect = W/H`), `outputColorSpace = THREE.SRGBColorSpace`. Call `renderer.render(scene, camera)` inside the scene's `update(t)`: no animation loop, no clock.
 - Chromium args for headless WebGL: `--use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist`. On a desktop with a GPU, try `--use-angle=default` first; it's much faster.
 - **Objects:** a GLB/GLTF the user supplies (product model) via `GLTFLoader`, pushing its promise into `window.LOADING`. Otherwise build one: a rounded phone or laptop slab from `ExtrudeGeometry` of a rounded-rect `Shape` with bevels, plus a screen `ShapeGeometry` whose UVs are remapped to 0–1 (see the lookbook).
 - **Render cost:** expect 0.3–1 s per frame in software WebGL. Benchmark 60 frames, keep geometry light, and split into more parallel chunks.

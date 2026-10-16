@@ -16,7 +16,7 @@ Fonts: `@fontsource/sora` (600, 700).
 
 ## Projection
 ```js
-const SC=128, CX=660, CY=340;   // 1920×1080 stage; tune CX/CY to center the scene
+const SC=128*U, CX=660, CY=340;   // values for 1920×1080; tune CX/CY to center the scene in other sizes
 const iso=(x,y,z)=>[CX+(x-y)*.866*SC, CY+(x+y)*.5*SC - z*SC];
 const pts=a=>a.map(p=>iso(...p).join(',')).join(' ');
 function setBox(o,x,y,z,w,d,h){   // o = {R,L,T} SVG polygons; draw R, then L, then T
