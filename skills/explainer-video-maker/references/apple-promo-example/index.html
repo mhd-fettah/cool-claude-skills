@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Explainer Video Maker Promo</title>
+<style>
+@font-face{font-family:"Inter Tight";font-weight:300;src:url(node_modules/@fontsource/inter-tight/files/inter-tight-latin-300-normal.woff2)}
+@font-face{font-family:"Inter Tight";font-weight:600;src:url(node_modules/@fontsource/inter-tight/files/inter-tight-latin-600-normal.woff2)}
+@font-face{font-family:"Inter Tight";font-weight:800;src:url(node_modules/@fontsource/inter-tight/files/inter-tight-latin-800-normal.woff2)}
+@font-face{font-family:JBM;font-weight:500;src:url(node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2)}
+:root{--bg:#000;--fg:#f5f5f7;--muted:#a1a1a6;--clay:#d97757;--grad-a:#ffd2b8;--grad-b:#d97757}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+body{font-family:"Inter Tight",sans-serif;color:var(--fg)}
+#stage{position:absolute;inset:0;overflow:hidden;background:#000}
+#glow{position:absolute;left:0;top:0;width:1400px;height:1400px;margin:-700px 0 0 -700px;border-radius:50%;opacity:0;mix-blend-mode:screen}
+#gl{position:absolute;left:0;top:0;width:1920px;height:1080px}
+#scenes{position:absolute;inset:0}
+.scene{position:absolute;inset:0;display:none}
+.w{position:absolute;font-weight:800;letter-spacing:-.035em;line-height:1;white-space:nowrap;transform-origin:0 50%;text-shadow:0 0 60px rgba(0,0,0,.65)}
+.grad{background:linear-gradient(90deg,var(--grad-a),var(--grad-b));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse 1300px 820px at 50% 50%,rgba(0,0,0,0) 55%,rgba(0,0,0,.6) 100%);pointer-events:none}
+#flash{position:absolute;inset:0;background:#fff;opacity:0}
+#black{position:absolute;inset:0;background:#000;opacity:0}
+</style></head>
+<body><div id="stage">
+<canvas id="gl" width="1920" height="1080"></canvas>
+<div id="glow"></div>
+<div id="scenes"></div>
+<canvas id="fg" width="1920" height="1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;opacity:0"></canvas>
+<svg id="fx" width="1920" height="1080" style="position:absolute;left:0;top:0;overflow:visible;pointer-events:none"></svg>
+<div id="vig"></div><div id="flash"></div><div id="black"></div>
+</div>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module" src="boot.js"></script>
+</body></html>
