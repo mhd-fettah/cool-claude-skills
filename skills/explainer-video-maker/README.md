@@ -6,6 +6,24 @@
 
 Turn docs, links, or text files into a narrated, animated explainer video (MP4).
 
+### Promo (41 s)
+
+<a href="../../assets/videos/explainer-video-maker-promo.mp4">
+  <img src="../../assets/videos/explainer-video-maker-promo.jpg" alt="Watch the promo: voxel Clawd next to the words Docs in. Video out." width="100%">
+</a>
+
+<p align="center"><a href="../../assets/videos/explainer-video-maker-promo.mp4">▶ Watch the promo</a></p>
+
+### Explainer (3 min 19 s)
+
+<a href="../../assets/videos/explainer-video-maker-explainer.mp4">
+  <img src="../../assets/videos/explainer-video-maker-explainer.jpg" alt="Watch the explainer: title card for Explainer Video Maker" width="100%">
+</a>
+
+<p align="center"><a href="../../assets/videos/explainer-video-maker-explainer.mp4">▶ Watch the explainer</a></p>
+
+Both videos were made with this skill.
+
 ## Features
 
 - **Any material in**: a URL, uploaded files, a folder, pasted text, or just a topic to research. If a page can't be fetched, it reads it through Claude in Chrome before asking you.
