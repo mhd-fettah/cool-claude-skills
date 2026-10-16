@@ -8,14 +8,16 @@ Turn docs, links, or text files into a narrated, animated explainer video (MP4).
 
 ## Features
 
-- **Any material in**: a URL, uploaded files, a folder, pasted text, or just a topic to research.
-- **Narrated**: natural voiceover with a choice of US and British voices and adjustable speed.
+- **Any material in**: a URL, uploaded files, a folder, pasted text, or just a topic to research. If a page can't be fetched, it reads it through Claude in Chrome before asking you.
+- **Narrated or silent**: natural voiceover with a choice of US and British voices and adjustable speed, or a silent video timed to reading speed. Captions can be turned off.
+- **Creative or faithful**: choose between original, minimal animations that explain the ideas (default), a balanced mix, or scenes that stick closely to the source and its screenshots.
 - **Animated scenes**: diagrams, icon cards, typed terminal commands, flowcharts, and screenshots shown in browser mockups. Not just slides of text.
 - **On-brand**: picks up the logo, colors, fonts, and screenshots from your site, so the video looks like yours.
 - **Styles to fit the content**: suggests a look based on the material (terminal dark, clean corporate, whiteboard, data story, brand match, and more).
 - **Captions and chapters**: on-screen captions, a chapter header, and a progress bar.
 - **Free and offline**: no paid service or API key. The voice and the rendering run locally.
-- **Guided setup**: asks a few short questions (style, length, voice), or uses sensible defaults if you're away.
+- **Guided setup**: asks a few short questions on one screen (length, voice, sound and captions, content approach). Change as many as you like, or keep the defaults. It asks where to save the video when there's no project to save into.
+- **Works on desktop and web**: detects whether it's running in Claude Code on your machine or in the claude.ai cloud workspace, picks the right place for files, and checks that the local voice model can run (falling back to the system voice or a silent video if not).
 
 ## Install
 
