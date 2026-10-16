@@ -5,11 +5,12 @@ collection of cool claude skills
 
 | Skill | What it does |
 |---|---|
-| [explainer-video-maker](skills/explainer-video-maker/README.md) | Turns docs, links, or text files into a narrated, animated explainer MP4. Runs offline, no API key. |
+| <img src="assets/mascot/mascot.png" width="48" alt=""> [explainer-video-maker](skills/explainer-video-maker/README.md) | Turns docs, links, or text files into a narrated, animated explainer MP4. Runs offline, no API key. |
 
 ## Layout
 
 - `skills/<name>/` — source of truth for each skill (`SKILL.md` + any scripts/references).
+- `assets/` — repo art (e.g. `assets/mascot/`, rebuilt with `python assets/mascot/build_mascot.py`).
 - `.claude/skills/<name>` — local, git-ignored link so Claude Code loads the dev copy when run in this repo.
 
 ## Local dev setup (Windows)

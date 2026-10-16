@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../../assets/mascot/mascot.png" alt="Voxel Clawd holding a clapperboard" width="320">
+</p>
+
 # Explainer Video Maker
 
 Turn docs, links, or text files into a narrated, animated explainer video (MP4).
