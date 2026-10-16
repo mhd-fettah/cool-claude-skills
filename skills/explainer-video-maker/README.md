@@ -13,7 +13,8 @@ Turn docs, links, or text files into a narrated, animated explainer video (MP4).
 - **Creative or faithful**: choose between original, minimal animations that explain the ideas (default), a balanced mix, or scenes that stick closely to the source and its screenshots.
 - **Animated scenes**: diagrams, icon cards, typed terminal commands, flowcharts, and screenshots shown in browser mockups. Not just slides of text.
 - **On-brand**: picks up the logo, colors, fonts, and screenshots from your site, so the video looks like yours.
-- **Styles to fit the content**: suggests a look based on the material (terminal dark, clean corporate, whiteboard, data story, brand match, and more).
+- **Styles to fit the content**: suggests a look based on the material: Terminal dark, Clean corporate, Whiteboard, Paper cutout, Isometric, Blueprint, Flat vector story or Minimal monochrome, each optionally in your brand's logo, colors and fonts. See them side by side in the [style lookbook](references/style-lookbook.html).
+- **Explainers or promos**: a full narrated explainer, or a 15–60 s promo cut to the beat of your music track, in Apple-style 3D or kinetic type.
 - **Captions and chapters**: on-screen captions, a chapter header, and a progress bar.
 - **Free and offline**: no paid service or API key. The voice and the rendering run locally.
 - **Guided setup**: asks a few short questions on one screen (length, voice, sound and captions, content approach). Change as many as you like, or keep the defaults. It asks where to save the video when there's no project to save into.
@@ -50,3 +51,15 @@ The key idea: **the voiceover is the clock.**
 7. **Mux + verify**: ffmpeg joins the chunks, adds the voice track with loudness normalization, and checks that audio and video durations match.
 
 The result is a 1920×1080 MP4 plus a timestamped narration script.
+
+For a **promo**, the music is the clock instead: a small script finds the track's beats, each shot gets a whole number of beats, and cuts land on them. 3D promos use Three.js in the same headless browser, which renders more slowly.
+
+## Folder layout
+
+```
+explainer-video-maker/
+├── SKILL.md                      # the pipeline Claude follows
+├── styles/                       # one file per style: tokens, fonts, layout, motion rules
+├── formats/promo.md              # music-timed promo format (beats, shots, mux)
+└── references/style-lookbook.html  # live previews and working code for every style
+```

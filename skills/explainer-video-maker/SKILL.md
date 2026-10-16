@@ -1,15 +1,20 @@
 ---
 name: "explainer-video-maker"
-description: "Turn docs, links, or text files into a narrated animated explainer MP4 (HTML/JS animations + Kokoro offline voice + Playwright + ffmpeg). Use when asked to make a video from material."
+description: "Turn docs, links, or text files into a narrated animated explainer MP4, or a short music-led promo (HTML/JS animations + Kokoro offline voice + Playwright + ffmpeg). Use when asked to make an explainer, promo, teaser or other video from material."
 ---
 
 # Explainer Video Maker
 
 Core idea: the **voiceover is the clock**. Generate narration one sentence at a time with Kokoro (free, offline TTS), record exactly when each sentence starts and ends, then drive every caption and animation from those timestamps. Animations are a single HTML page whose state is a pure function of time `renderAt(t)`. A headless browser screenshots it frame by frame, and ffmpeg encodes the frames and adds the voice track. Because the visuals follow the audio's timing, the two stay in sync.
 
-If the user picks a **silent video** (no narration), the clock is a reading-time timeline instead of the audio (section 5b). Everything else stays the same.
+If the user picks a **silent video** (no narration), the clock is a reading-time timeline instead of the audio (section 5b). For a **promo** (short, music-led teaser), the clock is the music's beats ([formats/promo.md](formats/promo.md)). Everything else stays the same.
 
-Pipeline: **Extract what was given → Detect environment → Intro (if needed) → Material (if missing) → Read it + collect brand assets → Style (suggested from the material) → Settings (change any number at once) → Notes + save location → Script → Voice (or silent) timeline → Scenes → Review stills → Render → Mux → Verify → Deliver**
+Pipeline: **Extract what was given → Detect environment → Intro (if needed) → Material (if missing) → Read it + collect brand assets → Format + style (suggested from the material) → Settings (change any number at once) → Notes + save location → Script → Voice / silent / beat timeline → Scenes (load the style file) → Review stills → Render → Mux → Verify → Deliver**
+
+Supporting files, loaded only when needed:
+- [styles/](styles/README.md): one file per style with tokens, fonts, layout, scene vocabulary and motion rules. Load the chosen one before writing scenes.
+- [formats/promo.md](formats/promo.md): the promo format (beats, shot script, music mux). Load it only for promos.
+- [references/style-lookbook.html](references/style-lookbook.html): working 960×540 code for every style (search `S({id:'<id>'`). Read the chosen style's block as a starting point.
 
 ---
 
@@ -59,19 +64,28 @@ Explain the skill in 2–3 sentences: "I can turn docs, links, or text files int
 ### Step 1: Material (skip if already provided; go straight to reading it)
 Ask what the video should cover: links, attached files, a connected folder, or pasted text. If they name a folder, list it and confirm which files to use. Then **read the material** (section 2) before asking about style, because the style suggestions depend on the content.
 
-### Step 2: Style (suggest based on the material)
-If the user already named a style, confirm it and move on. Otherwise use AskUserQuestion with options in this order:
-1. **Two or three styles recommended for this material**, each with one line saying why it fits. Mark the best one "(Recommended)". Examples:
-   - Developer tool or CLI docs → "Terminal dark" (dark warm background, monospace commands, brand-inspired accent).
-   - Business, process, or policy → "Clean corporate" (light background, navy and teal, simple icons and flowcharts).
-   - Science or education → "Whiteboard / chalk" (hand-drawn-style lines, step-by-step build-up).
-   - Product or marketing → "Bright flat explainer" (bold colors, playful shapes, a mascot).
-   - Data or reports → "Data story" (charts that animate in, big numbers).
-   - The client's own brand → "Brand match" (their logo, colors, fonts and real screenshots from the site). Recommend this first whenever brand assets are available.
-2. **General styles** that also fit, if they're not already listed: Minimal monochrome, Bright flat, Clean corporate.
-3. The user can type their own style ("Other"): a reference video, a palette, or brand colors.
+### Step 2: Format and style (suggest based on the material)
+**Format.** Explainer is the default. Use **Promo** when the request says promo, teaser, ad, trailer, launch video, or social clip, or the user picks a promo style. If the request is ambiguous about this (for example "a video for our launch"), ask it as the first question of this step: Explainer (narrated, covers the material, Default) / Promo (15–60 s, music-led, big visuals). For promos, load [formats/promo.md](formats/promo.md).
+
+**Style.** If the user already named a style, confirm it and move on. Otherwise use AskUserQuestion with 2–4 options:
+1. **Two or three styles recommended for this material and format**, each with one line saying why it fits. Mark the best one "(Recommended)". The catalogue is in [styles/README.md](styles/README.md):
+   - Developer tool, CLI, API docs → **Terminal dark**.
+   - Business, process, policy, B2B → **Clean corporate**.
+   - Tutorials and teaching → **Whiteboard**.
+   - Storytelling, friendly consumer brands, education → **Paper cutout**.
+   - Architecture, integrations, workflows → **Isometric**.
+   - Hardware, engineering, specs, protocols → **Blueprint**.
+   - Science, big ideas, mission → **Flat vector story**.
+   - Anything, quiet and safe → **Minimal monochrome**.
+   - Promo: product launch, hero shots → **Apple-style promo** (3D, slower to render). Teaser, social clip, quote → **Kinetic type**.
+   - When brand assets are available, offer the best fit as **"Brand match · <style>"** first: the style's layout with the client's logo, colors and fonts.
+2. The user can type their own style ("Other"): a reference video, a palette, or brand colors.
+
+If the user wants to see the styles first, point them to the lookbook ([references/style-lookbook.html](references/style-lookbook.html)), published as an artifact if the environment can publish one.
 
 ### Step 3: Settings (all on one screen; change as many as you like)
+For a promo, use the promo settings in [formats/promo.md](formats/promo.md) instead (length, sound, music, content approach). The rest of this step is for explainers.
+
 Don't ask "keep or change?" and then make the user pick a single thing. Ask **one AskUserQuestion call with up to four questions**, one per setting, so the user can change several settings in one go. In each question the **first option is the current default, labeled "(Default)"**, so keeping everything is just accepting the first option of each. Skip a question if the user already answered it in the request, and confirm it in the summary instead.
 
 1. **Length:** As long as needed, one video with chapters (Default; about 150 spoken words per minute) / Short summary, about 60–90 s / About 3 min / Several shorter videos, one per section.
@@ -227,19 +241,24 @@ print("total", round(t, 1))
 ```
 Then write `timeline.js` the same way. With "Silent, no captions", lean on bigger on-screen titles and keep each scene's key text up for the scene's full length.
 
+## 5c. Beat timeline (promo only)
+Follow [formats/promo.md](formats/promo.md): `beats.py` finds the music's beats (or makes a fixed BPM grid), and `promo_timeline.py` writes a `timeline.json` of the same shape, so sections 6–8 work unchanged.
+
 ## 6. Scenes (HTML/CSS/JS, deterministic)
 
 Files: `index.html` (fonts, CSS tokens, stage, header, captions, progress bar), `lib.js` (helpers), `scenes.js` (one object per scene id), `main.js` (the time engine).
 
 **Rules**
-- No CSS transitions or animations, no `setTimeout`, no `Date.now()`, no randomness. Everything is computed from `t` inside `update()`.
+- **Load the style file first** (`styles/<style>.md`) and take tokens, fonts, layout and scene vocabulary from it. Use the matching block in the lookbook as working code (its stage is 960×540; double the coordinates).
+- No CSS transitions or animations, no `setTimeout`, no `Date.now()`, no `Math.random()`. Everything is computed from `t` inside `update()`. Seeded pseudo-randomness is fine (for example `hash(frameIndex*7+id)`), because the same frame always gives the same result.
 - Stage size is 1920×1080. Keep content between y≈110 and y≈880. Captions sit at `bottom:44px`.
 - **Captions off:** set `window.CAPTIONS=false` in `index.html` and skip caption rendering in `renderAt`. Content may then use the space down to y≈980.
 - Load fonts from `node_modules/@fontsource/*/files/*.woff2` via `@font-face`. Wait for `document.fonts.ready`.
 - Each scene has `build(root, C)`, which creates the DOM once, and `update(t, C, st)`, where `t` is local seconds. `C(i, f)` gives the local time at fraction `f` of line `i`. Use it to time reveals to the words, for example `C(0, .5)` for the middle of the first sentence.
 - To hide elements, use `visibility`, never `display=''`, because that wipes an inline `display:flex`.
 - Centered elements (`addC`) need `width:max-content`, or their text wraps.
-- Visual vocabulary: cycle diagrams (SVG ring with a moving dot), icon cards revealed one by one with the active card highlighted, terminal windows with typed commands, segmented toggles with a sliding pill, flow and branch diagrams with `drawOn`, keycaps, and chips. Show the concept rather than just repeating the words.
+- Visual vocabulary comes from the style file. Shared basics in any style: cycle diagrams (SVG ring with a moving dot), cards revealed one by one with the active one highlighted, flow and branch diagrams with `drawOn`, keycaps, and chips. Show the concept rather than just repeating the words.
+- 3D (Apple-style promo) needs Three.js served over HTTP and WebGL flags for Chromium; the setup is in `styles/apple-promo.md`.
 
 **lib.js core**
 ```js
@@ -289,7 +308,7 @@ const {chromium}=require('playwright');const{spawn}=require('child_process');con
  for(let f=s;f<e;f++){await p.evaluate(t=>window.renderAt(t),f/FPS);const buf=await p.screenshot({type:'jpeg',quality:92});if(!ff.stdin.write(buf))await new Promise(r=>ff.stdin.once('drain',r));}
  ff.stdin.end();await new Promise(r=>ff.on('close',r));await b.close();console.log('done',out);})();
 ```
-Adjust `executablePath` to whatever Chromium exists. On a desktop, omit `executablePath` so Playwright uses its own Chromium, and on Windows build the URL with `require('url').pathToFileURL(__dirname+'/index.html').href`. Total frames are `ceil(duration*30)`. Benchmark 60 frames first (about 0.08 s per frame), then split into one chunk per CPU core and run the chunks in parallel (`nohup ... &` on Linux/macOS; on Windows use background shell runs or `Start-Process`). Poll the logs until each says `done`.
+For 3D styles, add the WebGL args from `styles/apple-promo.md`, load `http://localhost:8123/index.html` instead of the file URL, and wait for `window.READY` to exist before awaiting it. Adjust `executablePath` to whatever Chromium exists. On a desktop, omit `executablePath` so Playwright uses its own Chromium, and on Windows build the URL with `require('url').pathToFileURL(__dirname+'/index.html').href`. Total frames are `ceil(duration*30)`. Benchmark 60 frames first (about 0.08 s per frame), then split into one chunk per CPU core and run the chunks in parallel (`nohup ... &` on Linux/macOS; on Windows use background shell runs or `Start-Process`). Poll the logs until each says `done`.
 
 ## 9. Mux
 
@@ -298,7 +317,7 @@ printf "file part1.mp4\nfile part2.mp4\n" > list.txt
 ffmpeg -y -f concat -safe 0 -i list.txt -c copy video.mp4
 ffmpeg -y -i video.mp4 -i voice.wav -c:v copy -c:a aac -b:a 192k -af "loudnorm=I=-16:TP=-1.5" -shortest -movflags +faststart Final.mp4
 ```
-Silent video: skip the audio mux and just remux: `ffmpeg -y -i video.mp4 -c copy -an -movflags +faststart Final.mp4`.
+Silent video: skip the audio mux and just remux: `ffmpeg -y -i video.mp4 -c copy -an -movflags +faststart Final.mp4`. Promo with music: use the mux commands in `formats/promo.md`.
 
 ## 10. Verify
 
