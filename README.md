@@ -1,5 +1,11 @@
 # cool-claude-skills
-collection of cool calude skills 
+collection of cool claude skills
+
+## Skills
+
+| Skill | What it does |
+|---|---|
+| [explainer-video-maker](skills/explainer-video-maker/README.md) | Turns docs, links, or text files into a narrated, animated explainer MP4. Runs offline, no API key. |
 
 ## Layout
 

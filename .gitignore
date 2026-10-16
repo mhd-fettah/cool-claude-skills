@@ -1,2 +1,5 @@
 # Local dev link to skills/ (Windows junction)
 .claude/skills/
+
+# Test outputs from running skills locally (videos, scripts, etc.)
+skills/*/outputs/
